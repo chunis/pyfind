@@ -1,3 +1,11 @@
+Version 0.1
+
+2006.11.10: Change the font of 'recursvie' to be the same as 'key word' and 'type'
+2006.11.21: The format of Version/Author/Date 
+2006.11.21: Rediect the search result from console into a scrollable text area with the help of import PP3E's scrolledlist.py
+2006.11.21: Add buttons for 'open file', 'open folder', 'clean result', and change the buttons lay out.
+2006.11.21: Give 'type' a default value 'chm'.
+
 
 Ver 0.0.1
 2006.09.17: The initiation version change from PySort-0.0.1
