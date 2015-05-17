@@ -1,3 +1,10 @@
+Version 0.1.2
+
+2006.12.06: Fixed: when find files in another dir, files in original dir can't be opened, and the dir can't be opened ether.
+2006.12.06: Fixed: files under directly in the search dir can't 'Open Dir'
+2006.12.06: Error path now will be warned to correct first instead just be ignored.
+2006.12.06: New search result won't include the old items now.
+
 Version 0.1.1
 
 2006.11.22: Change GUI's lay out, with 'Quit' button's small improvement.

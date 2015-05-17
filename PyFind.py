@@ -1,19 +1,19 @@
 #! /usr/bin/python
 
-# PyFind (0.1.1) By: Chunchengfh	at: 2006/11/21
+# PyFind  By: Chunchengfh	at: 2006/11/21
 # About: find some file(s) in a certain dir
 
 from Tkinter import *
 
 from tkFileDialog import askdirectory
-from tkMessageBox import showinfo
+from tkMessageBox import *
 from scrolledlist import ScrolledList
 import os, sys
 import glob
 
-Version = '0.1.1'
+Version = '0.1.2'
 Author = 'chunchengfh@gmail.com'
-Date = '2006.11.22'
+Date = '2006.12.06'
 
 def myhelp():
 	showinfo('Help', '''PyFind can find a certain type of files in a '''
@@ -27,10 +27,10 @@ def myabout():
 def brws():
 	global dirname
 #	dirname = askdirectory(initialdir = 'c:\\')
-	dirname = askdirectory()
+	tmp_dir = askdirectory()
 #	print dirname
 	epath.delete(0, END)
-	epath.insert(0, dirname)
+	epath.insert(0, tmp_dir)
 
 def setvar():
 	global recu
@@ -41,16 +41,26 @@ def myclear():
 
 def myopen():
 	file = scroll.listbox.get('active')
-	os.startfile(file)
+	print dirnames
+	for dir in dirnames:
+		print dir, 'good'
+		tmp_file = os.path.join(dir, file)
+		print 'tmp_file:', tmp_file
+		if os.path.exists(tmp_file):
+			os.startfile(tmp_file)
+			break
 
 def myopen_dir():
 	file = scroll.listbox.get('active')
-	file_dir = os.path.dirname(file)
-#	print file_dir
-	tmp_dir = os.getcwd()
-	os.chdir(file_dir)
-	os.startfile('.')
-	os.chdir(tmp_dir)
+	for dir in dirnames:
+		tmp_file = os.path.join(dir, file)
+		if os.path.exists(tmp_file):
+			print tmp_file
+			file_dir = os.path.dirname(tmp_file)
+			tmp_dir = os.getcwd()
+			os.chdir(file_dir)
+			os.startfile('.')
+			os.chdir(tmp_dir)
 
 def recufind(path, allpath, file):
 	os.chdir(path)
@@ -66,13 +76,22 @@ def recufind(path, allpath, file):
 def myFind():
 #	print dirname
 	global dirname
-	if dirname == '':
-		dirname = epath.get()
+
+	dirname = epath.get()
+	if not os.path.isdir(dirname):
+		showerror('Wrong Path', 'The folder doesn\'t exist. Please correct it first')
+		return
+
+	if dirname not in dirnames:
+#		dirnames.append(dirname)
+		dirnames[:0] = [ dirname ]
 	os.chdir(dirname)
 	type = etype.get()
 	keywords = ekeyword.get()
 	file = '*' + keywords + '*.' + type
 
+	global result
+	result = [ ]
 	books=glob.glob(file)
 	for book in books:
 		result.append(book)
@@ -105,6 +124,7 @@ win5.pack(side=TOP, expand=YES, fill=BOTH)
 recu = 0
 result = [ ]  # used for store result 
 dirname = ''
+dirnames = [ ] # used for store old dirs
 
 font1 = ('times', 11, 'bold')
 font2 = ('times', 13, 'bold')
