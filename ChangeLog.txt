@@ -1,3 +1,9 @@
+Version 0.1.1
+
+2006.11.22: Change GUI's lay out, with 'Quit' button's small improvement.
+2006.11.22: Code restructured, mainly for GUI's lay out.
+2006.11.22: Can get inputed path now, instead only get path from button 'Browse'
+
 Version 0.1
 
 2006.11.10: Change the font of 'recursvie' to be the same as 'key word' and 'type'
