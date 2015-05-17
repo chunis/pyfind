@@ -1,0 +1,5 @@
+
+Ver 0.0.1
+2006.09.17: The initiation version change from PySort-0.0.1
+2006.11.10: Add 'recursive' options, and make PyFind works normal
+2006.11.10: Ver-0.0.1 released
