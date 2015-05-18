@@ -4,6 +4,7 @@
 # Name:   PyFind
 # Author: Chunchengfh
 # About:  find file(s) in a certain dir
+# License: GPLv3
 
 import os, sys
 import glob, shutil, thread
