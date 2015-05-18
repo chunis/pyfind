@@ -1,0 +1,8 @@
+About how to build the exe file:
+
+
+Produce file 'PyFind-0.1.4.spec':
+    cmd> ..\pyinstaller_1.3\Makespec.py -F -w PyFind-0.1.4.py
+now run Build.py to build the executable:
+    cmd>..\pyinstaller_1.3\Build.py PyFind-0.1.4.spec
+

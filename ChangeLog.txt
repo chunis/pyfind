@@ -1,3 +1,11 @@
+Version 0.1.4
+
+2008.01.14: support chinese search
+2008.02.16: use file pyfind.cfg to save and gain last time's search path, type and recusive status
+2008.02.16: fix a few bugs
+2008.02.16: clean the code
+
+
 Version 0.1.3
 
 2007.01.05: Double-click to open item which is selected

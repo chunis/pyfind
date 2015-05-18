@@ -1,58 +1,75 @@
 #! /usr/bin/python
+# -*- coding: gb2312 -*-
 
-# PyFind  By: Chunchengfh
-# About: find file(s) in certain dir(s)
+# Name:   PyFind
+# Author: Chunchengfh
+# About:  find file(s) in a certain dir
+
+import os, sys
+import glob, shutil, thread
 
 from Tkinter import *
-
 from tkFileDialog import askdirectory
 from tkMessageBox import *
-from scrolledlist import ScrolledList
-import os, sys
-import glob
-import shutil
 
-Version = '0.1.3'
-Author = 'chunchengfh@gmail.com'
-Date = '2007.01.08'
+from scrolledlist import ScrolledList
+
+Version = '0.1.4'
+Author = 'Deng Chunhui'
+Email = 'chunchengfh@gmail.com'
+Date = '2008.02.17'
 
 class myScrolledList(ScrolledList):
 	def runCommand(self, selection):
 		for dir in dirnames:
-			print dir, 'good'
+#			print 'dir:', dir
 			tmp_file = os.path.join(dir, selection)
-			print 'tmp_file:', tmp_file
+#			print 'tmp_file:', tmp_file
 			if os.path.exists(tmp_file):
 				os.startfile(tmp_file)
 				break
 
 def myhelp():
-	showinfo('Help', '''PyFind can find a certain type of files in a '''
-			+ '''certain directory by regular express search. ''')
+	showinfo('Help', 'PyFind can find a certain type of files \nin a '
+			+ 'certain directory by regular express search ')
 
 def myabout():
-	showinfo('About', ''' PyFind  --  ''' + Version 
-			+ ''' \n\n Python/Tkinter +  py2exe (for .exe file) \n\n Author:\t''' 
-			+ Author + '''\n\n Date:\t''' + Date)
+	showinfo('About', ' PyFind (version:' + Version + ')'
+			+ '\n\n Author: ' + Author 
+			+ '\n Email: ' + Email 
+			+ '\n\n Date:\t' + Date)
+
+def myquit():
+	try:
+		cfg_file = open(CFG_FILE, 'w')
+	except IOError, msg:
+		pass
+	else:
+		cfg_file.write('dir=%s\n' %epath.get())
+		cfg_file.write('type=%s\n' %etype.get())
+		cfg_file.write('recu=%s\n' %var.get())
+		cfg_file.close()
+
+	root.quit()
 
 def brws():
-	global dirname
-#	dirname = askdirectory(initialdir = 'c:\\')
-	tmp_dir = askdirectory()
+	global tmp_dir
+	tmp_dir = askdirectory(initialdir = dirname)
 #	print dirname
-	epath.delete(0, END)
-	epath.insert(0, tmp_dir)
+	if tmp_dir != '':
+		epath.delete(0, END)
+		epath.insert(0, tmp_dir)
 
 def myclear():
 	scroll.listbox.delete(0, END)
 
 def myopen():
 	file = scroll.listbox.get('active')
-	print dirnames
+#	print dirnames
 	for dir in dirnames:
-		print dir, 'good'
+#		print dir, 'good'
 		tmp_file = os.path.join(dir, file)
-		print 'tmp_file:', tmp_file
+#		print 'tmp_file:', tmp_file
 		if os.path.exists(tmp_file):
 			os.startfile(tmp_file)
 			break
@@ -62,7 +79,7 @@ def myopen_dir():
 	for dir in dirnames:
 		tmp_file = os.path.join(dir, file)
 		if os.path.exists(tmp_file):
-			print tmp_file
+#			print tmp_file
 			file_dir = os.path.dirname(tmp_file)
 			tmp_dir = os.getcwd()
 			os.chdir(file_dir)
@@ -75,8 +92,9 @@ def mycopy():
 		tmp_file = os.path.join(dir, file)
 		if os.path.exists(tmp_file):
 			tmp_dir = askdirectory()
-			print 'copy to: ' + tmp_dir
+#			print 'copy to: ' + tmp_dir
 			shutil.copy(tmp_file, tmp_dir)
+
 
 def recufind(path, allpath, file):
 	if find_flag == False:
@@ -89,40 +107,46 @@ def recufind(path, allpath, file):
 	books=glob.glob(file)
 	for book in books:
 		result.append(allpath + '/' + book)
-		scroll.listbox.insert('end', allpath + '/' + book)
+		scroll.listbox.insert('end', allpath.decode('gbk') + '/' + book.decode('gbk'))
 #		print path + '/' + book
 	for filepath in os.listdir('.'):
 		if os.path.isdir(filepath):
 			recufind(filepath, allpath+'/'+filepath, file)
 	os.chdir('..')
 
-import thread
 def myFind():
 	global find_flag
 	if find_flag == True:
 		find_flag = not find_flag
 	else:
-		thread.start_new(real_find, ())
+		prepare_find()
 
-def real_find():
+def prepare_find():
 #	print dirname
 	global dirname
-	global find_flag
 
-	find_flag = True
 	bfind.config(text='Cancel')
 
 	dirname = epath.get()
 	if not os.path.isdir(dirname):
 		showerror('Wrong Path', 'The folder doesn\'t exist. Please correct it first')
+		bfind.config(text='Find')
 		return
+
+	thread.start_new(real_find, ())
+
+
+def real_find():
+	global dirname
+	global find_flag
+	find_flag = True
 
 	if dirname not in dirnames:
 #		dirnames.append(dirname)
 		dirnames[:0] = [ dirname ]
 	os.chdir(dirname)
 	type = etype.get()
-	keywords = ekeyword.get()
+	keywords = (ekeyword.get()).encode('gbk')
 	recu = var.get()
 	file = '*' + keywords + '*.' + type
 
@@ -135,7 +159,7 @@ def real_find():
 	books=glob.glob(file)
 	for book in books:
 		result.append(book)
-		scroll.listbox.insert('end', book)
+		scroll.listbox.insert('end', book.decode('gbk'))
 #		print book
 
 	if recu == 1:
@@ -148,8 +172,6 @@ def real_find():
 		lstatus.config(text='Find finished')
 		find_flag = False
 	
-#	for book in result:
-#		scroll.listbox.insert('end', book)
 
 root = Tk()
 root.title('PyFind-' + Version)
@@ -169,9 +191,31 @@ win3.pack(side=TOP, fill=X)
 win4.pack(side=TOP, fill=X)
 win5.pack(side=TOP, expand=YES, fill=BOTH)
 
-recu = 0
+CFG_FILE = os.path.join(os.getcwd(), 'pyfind.cfg')
+
+# get last time's choices
+try:
+	cfg_file = open(CFG_FILE, 'r')
+except IOError, msg:
+	tmp_dir = dirname = ''
+	type = '*'
+	recu = 0
+else:
+	cfg = {}
+	line = cfg_file.readline().rstrip()
+	while line:
+		options = line.split('=')
+		try:
+			cfg[options[0]] = options[1]
+		except IndexError:
+			pass
+		line = cfg_file.readline().rstrip()
+	cfg_file.close()
+	tmp_dir = dirname = cfg.get('dir', '')
+	type = cfg.get('type', '*')
+	recu = int(cfg.get('recu', 0))
+
 result = [ ]  # used for store result 
-dirname = ''
 dirnames = [ ] # used for store old dirs
 find_flag = False	# when in find process: true; else: false
 
@@ -205,8 +249,8 @@ browse.bind('<Return>', lambda event: brws())
 
 epath = Entry(win3, width=40)
 epath.pack(padx=5, side=LEFT, expand=YES, fill=X)
-#epath.delete(0, END)
-#epath.insert(0, 'E:\New Folder')
+epath.delete(0, END)
+epath.insert(0, dirname)
 
 Label(win4, text='key word:', font=font3).pack(side=LEFT) #, anchor='e')
 ekeyword = Entry(win4, width=20)
@@ -215,8 +259,7 @@ ekeyword.bind('<Return>', lambda event: myFind())
 
 Label(win4, text='type:', font=font3).pack(side=LEFT) #, anchor='e')
 etype = Entry(win4, width=6)
-#etype.insert(0, 'chm')
-etype.insert(0, '*')
+etype.insert(0, type)
 etype.pack(padx=5, side=LEFT)
 etype.bind('<Return>', lambda event: myFind())
 
@@ -225,7 +268,7 @@ var = IntVar()
 crecu=Checkbutton(win4, text='recursive', font=font3, variable=var)
 crecu.pack(padx=5, side=LEFT)
 crecu.bind('<Return>', lambda event: myFind())
-#var.set(1)
+var.set(recu)
 
 scroll = myScrolledList('', win5)
 
@@ -233,7 +276,7 @@ lstatus = Label(win6, font=font3)
 lstatus.config(relief=SUNKEN, padx=2, pady=2)
 lstatus.pack(side=LEFT, expand=YES, fill=X)
 
-bquit = Button(win2, text='Quit', command=root.quit)
+bquit = Button(win2, text='Quit', command=myquit)
 bquit.config(font=font2, padx=1)
 
 bfind = Button(win2, text='Find', command=myFind)

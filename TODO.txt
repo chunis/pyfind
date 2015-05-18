@@ -1,5 +1,4 @@
 Add menu 
-Save personal configuration
 Port to Linux (Some functions can work now, more need to change)
-Support Chinese
 Chinese Version
+more doc and comments
